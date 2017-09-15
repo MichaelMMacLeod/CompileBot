@@ -12,6 +12,11 @@ bot.on('ready', function (e) {
     logger.info("Connected");
     logger.info("Logged in as: ");
     logger.info(bot.username + " - (" + bot.id + ")");
+    bot.setPresence({
+        game: {
+            name: 'Code Munching'
+        }
+    })
 });
 
 var CompileBot = (() => {
