@@ -110,8 +110,8 @@ var CompileBot = (() => {
               , words   = lines[0].match(/\w+/g)
               , lang    = parseLang(words[1])
               , args    = (lines[0].match(/-.[^-^`]+/g) || []).join(' ')
-              , program = message.match(/\n[^```]*/g)[0]
-              , input   = ''; // TODO: handle input.
+              , program = message.match(/\n[^```]*/g)[0] || ''
+              , input   = message.match(/\n[^```]*/g)[1].trim() || '';
 
             return { 
                 'lang': lang, 
