@@ -111,7 +111,7 @@ var CompileBot = (() => {
               , lang    = parseLang(words[1])
               , args    = (lines[0].match(/-.[^-^`]+/g) || []).join(' ')
               , program = message.match(/\n[^```]*/g)[0] || ''
-              , input   = message.match(/\n[^```]*/g)[1].trim() || '';
+              , input   = (message.match(/\n[^```]*/g)[1] || '').trim();
 
             return { 
                 'lang': lang, 
