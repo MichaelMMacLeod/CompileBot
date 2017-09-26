@@ -175,14 +175,15 @@ var CompileBot = (() => {
     })();
 
     var Internal = (() => {
-        var query = (message) => {
+        var query = (message, botID) => {
             var queries = {
-                    'help': 'Hi. I\'m @CompileBot. I compile code.\nCommands:\nhelp - Display this message.\nsyntax - How to enter code that I can understand.\napi - Information about the api(s) I use to compile code.\nsource - View my source code.\nissue - Submit a bug/issue report.\nauthor - Who built me?'
+                    'help': 'Hi. I\'m @CompileBot. I compile code.\nCommands:\nhelp - Display this message.\nsyntax - How to enter code that I can understand.\napi - Information about the api(s) I use to compile code.\nsource - View my source code.\nissue - Submit a bug/issue report.\nauthor - Who built me?\ntest - Have me compile a test program for you.'
                   , 'syntax': 'IMPORTANT:\nThere are special API-specific rules for how to structure programs that I can understand.\nTo see these rules, enter `@CompileBot api`\n\nText inside [brackets] is optional. Text inside (parenthesis) is required. Plain text should appear exactly how it is written.\n\n@CompileBot (language) [-args]\\`\\`\\`[language]\n[code]\n\\`\\`\\`Input\\`\\`\\`\n[input]\n\\`\\`\\`\n\nExample:\n\n@CompileBot Java\\`\\`\\`Java\nimport java.util.Scanner;\nclass Rextester {\n    public static void main(String[] args) {\n        Scanner scan = new Scanner(System.in);\n        String demoInput = scan.nextLine();\n        System.out.println("Demo input: " + demoInput);\n    }\n}\n\\`\\`\\`Input\\`\\`\\`\nHello, World!\n\\`\\`\\`\n\nWill print\n\nDemo Input: Hello, World!'
                   , 'api': 'I use the rextester.com API.\n\nFor Java programs, you must include a main method within a class declared as `class Rextester` (no public modifier).\n\nThere are other rules for different languages.\nFor a full list of rules, visit rextester.com.'
                   , 'source': 'Source core available at https://github.com/michaelmmacleod/compilebot'
                   , 'issue': 'Found a bug or issue? Submit it at https://github.com/michaelmmacleod/compilebot/issues. Thanks!'
                   , 'author': 'I was created by Michael MacLeod. <michaelmmacleod@gmail.com>'
+                  , 'test': '<@' + botID + '>' + ' Haskell -o a.out source_file.hs```Haskell\nmain = getLine >>= print\n```Input```\nHello, World!```'
             }
 
             var result = queries[message.toLowerCase()];
@@ -210,7 +211,7 @@ bot.on('message', function (user, userID, channelID, message, e) {
         } else if (parsedMessage['type'] === 'query') {
             CompileBot.Out.send(
                 channelID, 
-                CompileBot.Internal.query(parsedMessage['query']));
+                CompileBot.Internal.query(parsedMessage['query'], bot.id));
         }
     }
 });
