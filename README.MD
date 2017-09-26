@@ -37,7 +37,7 @@ run `npm install discord.io winston request --save`
 
 Start the bot with `node main`
 
-Check if the bot is working correctly by typing `@CompileBot test` in the Discord server that your CompileBot lives in.
+Check if the bot is working correctly by typing `@YourBotName test` in the Discord server that your bot lives in.
 
 Contributions
 =============
