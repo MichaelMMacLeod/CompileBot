@@ -7,6 +7,7 @@ I use the rextester.com API. Support for more APIs may come in the future.
 Requirements
 ============
 node.js
+
 npm
 
 Usage
@@ -36,4 +37,10 @@ run `npm install discord.io winston request --save`
 
 Start the bot with `node main`
 
-Check if the bot is working correctly by typing `@CompileBot test` in the Discord server that CompileBot lives in.
+Check if the bot is working correctly by typing `@CompileBot test` in the Discord server that your CompileBot lives in.
+
+Contributions
+=============
+Bugs/issues/requests/ideas are welcome!
+
+Go to https://github.com/MichaelMMacLeod/CompileBot/issues, or submit a pull request.
