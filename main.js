@@ -14,7 +14,7 @@ bot.on('ready', function (e) {
     logger.info(bot.username + " - (" + bot.id + ")");
     bot.setPresence({
         game: {
-            name: 'Code Munching'
+            name: '@CompileBot help'
         }
     })
 });
@@ -32,8 +32,14 @@ var CompileBot = (() => {
 
             var lines = message.split('\n');
 
-            if (message.length === 1) {
-                return false; // TODO: handle commands like "@CompileBot info"
+            if (lines.length === 1) {
+                var words = lines[0].match(/\w+/g);
+
+                if (words.length != 2) {
+                    return false;
+                }
+
+                return true;
             } else {
                 var words = lines[0].match(/\w+/g);
 
@@ -106,6 +112,16 @@ var CompileBot = (() => {
         }
 
         parse = (message, id) => {
+            var lines = message.split('\n');
+            
+            if (lines.length === 1) {
+                return {
+                    'type': 'query',
+                    'query': lines[0].match(/\w+/g)[1]
+                }
+
+            }
+
             var lines   = message.match(/.*\n/g)
               , words   = lines[0].match(/\w+/g)
               , lang    = parseLang(words[1])
@@ -114,6 +130,7 @@ var CompileBot = (() => {
               , input   = (message.match(/\n[^```]*/g)[1] || '').trim();
 
             return { 
+                'type': 'compilation',
                 'lang': lang, 
                 'args': args, 
                 'program': program, 
@@ -157,13 +174,41 @@ var CompileBot = (() => {
         return { send, rexhandler, compile };
     })();
 
-    return { In, Out };
+    var Internal = (() => {
+        var query = (message) => {
+            var queries = {
+                    'help': 'Hi. I\'m @CompileBot. I compile code.\nCommands:\nhelp - Display this message.\nsyntax - How to enter code that I can understand.\napi - Information about the api(s) I use to compile code.'
+                  , 'syntax': 'IMPORTANT:\nThere are special API-specific rules for how to structure programs that I can understand.\nTo see these rules, enter `@CompileBot api`\n\nText inside [brackets] is optional. Text inside (parenthesis) is required. Plain text should appear exactly how it is written.\n\n@CompileBot (language) [-args]\\`\\`\\`[language]\n[code]\n\\`\\`\\`Input\\`\\`\\`\n[input]\n\\`\\`\\`\n\nExample:\n\n@CompileBot Java\\`\\`\\`Java\nimport java.util.Scanner;\nclass Rextester {\n    public static void main(String[] args) {\n        Scanner scan = new Scanner(System.in);\n        String demoInput = scan.nextLine();\n        System.out.println("Demo input: " + demoInput);\n    }\n}\n\\`\\`\\`Input\\`\\`\\`\nHello, World!\n\\`\\`\\`\n\nWill print\n\nDemo Input: Hello, World!'
+                  , 'api': 'I use the rextester.com API.\n\nFor Java programs, you must include a main method within a class declared as `class Rextester` (no public modifier).\n\nThere are other rules for different languages.\nFor a full list of rules, visit rextester.com.'
+                , 
+            }
+
+            var result = queries[message.toLowerCase()];
+
+            if (result)
+                return result;
+            else
+                return 'Unknown command. Try `@CompileBot help`';
+        };
+
+        return { query };
+    })();
+
+    return { In, Internal, Out };
 })();
 
 bot.on('message', function (user, userID, channelID, message, e) {
     if (CompileBot.In.verify(message, bot.id)) {
-        CompileBot.Out.compile(
-            CompileBot.In.parse(message, bot.id),
-            CompileBot.Out.rexhandler(channelID));
+        var parsedMessage = CompileBot.In.parse(message, bot.id);
+
+        if (parsedMessage['type'] === 'compilation') {
+            CompileBot.Out.compile(
+                CompileBot.In.parse(message, bot.id),
+                CompileBot.Out.rexhandler(channelID));
+        } else if (parsedMessage['type'] === 'query') {
+            CompileBot.Out.send(
+                channelID, 
+                CompileBot.Internal.query(parsedMessage['query']));
+        }
     }
 });
